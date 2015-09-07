@@ -33,8 +33,6 @@ Description::Description() :
     mOpaque = true;
     mTextureEnabled = false;
     mColorMatrixEnabled = false;
-    mMaskTextureEnabled = false;
-    mMaskAlphaThreshold = 0.0f;
 
     memset(mColor, 0, sizeof(mColor));
 }
@@ -88,20 +86,6 @@ void Description::setColorMatrix(const mat4& mtx) {
     const mat4 identity;
     mColorMatrix = mtx;
     mColorMatrixEnabled = (mtx != identity);
-}
-
-void Description::setMasking(const Texture& maskTexture, float alphaThreshold) {
-    mMaskTexture = maskTexture;
-    mMaskTextureEnabled = true;
-    mMaskAlphaThreshold = alphaThreshold;
-}
-
-void Description::disableMasking() {
-    mMaskTextureEnabled = false;
-}
-
-const mat4& Description::getColorMatrix() const {
-    return mColorMatrix;
 }
 
 

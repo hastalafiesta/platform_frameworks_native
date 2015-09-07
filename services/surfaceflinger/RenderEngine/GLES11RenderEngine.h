@@ -40,8 +40,8 @@ class GLES11RenderEngine : public RenderEngine {
     GLint mMaxTextureSize;
 
     virtual void bindImageAsFramebuffer(EGLImageKHR image,
-            uint32_t* texName, uint32_t* fbName, uint32_t* status, bool useReadPixels, int reqWidth, int reqHeight);
-    virtual void unbindFramebuffer(uint32_t texName, uint32_t fbName, bool useReadPixels);
+            uint32_t* texName, uint32_t* fbName, uint32_t* status);
+    virtual void unbindFramebuffer(uint32_t texName, uint32_t fbName);
 
 public:
     GLES11RenderEngine();
@@ -59,10 +59,11 @@ protected:
     virtual void setupFillWithColor(float r, float g, float b, float a) ;
     virtual void disableTexturing();
     virtual void disableBlending();
-    virtual void setupLayerMasking(const Texture& /*maskTexture*/, float /*alphaThreshold*/) {}
-    virtual void disableLayerMasking() {}
 
     virtual void drawMesh(const Mesh& mesh);
+
+    virtual void beginGroup(const mat4& colorTransform);
+    virtual void endGroup();
 
     virtual size_t getMaxTextureSize() const;
     virtual size_t getMaxViewportDims() const;

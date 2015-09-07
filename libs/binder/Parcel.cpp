@@ -1045,15 +1045,6 @@ int64_t Parcel::readInt64() const
     return readAligned<int64_t>();
 }
 
-
-#ifdef NEEDS_LGE_RIL_SYMBOLS
-status_t Parcel::readuInt64(uint64_t *pArg) const
-{
-    return readAligned(pArg);
-}
-#endif
-
-
 status_t Parcel::readPointer(uintptr_t *pArg) const
 {
     status_t ret;
@@ -1224,10 +1215,6 @@ native_handle* Parcel::readNativeHandle() const
     if (err != NO_ERROR) return 0;
 
     native_handle* h = native_handle_create(numFds, numInts);
-    if (!h) {
-        return 0;
-    }
-
     for (int i=0 ; err==NO_ERROR && i<numFds ; i++) {
         h->data[i] = dup(readFileDescriptor());
         if (h->data[i] < 0) err = BAD_VALUE;

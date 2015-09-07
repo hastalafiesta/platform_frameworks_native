@@ -98,29 +98,14 @@ void GLES11RenderEngine::setViewportAndProjection(
         case Transform::ROT_0:
             break;
         case Transform::ROT_90:
-        {
-            float x1 = (l+r)/2;
-            float y1 = (t+b)/2;
-            glTranslatef(x1-y1, x1+y1, 0);
-            glRotatef(270, 0, 0, 1);
-            break;
-        }
-        case Transform::ROT_180:
-        {
-            float x1 = (l+r)/2;
-            float y1 = (t+b)/2;
-            glTranslatef(x1*2, y1*2, 0);
-            glRotatef(180, 0, 0, 1);
-            break;
-        }
-        case Transform::ROT_270:
-        {
-            float x1 = (l+r)/2;
-            float y1 = (t+b)/2;
-            glTranslatef(x1+y1, y1-x1, 0);
             glRotatef(90, 0, 0, 1);
             break;
-        }
+        case Transform::ROT_180:
+            glRotatef(180, 0, 0, 1);
+            break;
+        case Transform::ROT_270:
+            glRotatef(270, 0, 0, 1);
+            break;
         default:
             break;
     }
@@ -231,45 +216,28 @@ void GLES11RenderEngine::disableBlending() {
 }
 
 void GLES11RenderEngine::bindImageAsFramebuffer(EGLImageKHR image,
-        uint32_t* texName, uint32_t* fbName, uint32_t* status,
-        bool useReadPixels, int reqWidth, int reqHeight) {
+        uint32_t* texName, uint32_t* fbName, uint32_t* status) {
     GLuint tname, name;
-    if (!useReadPixels) {
-        // turn our EGLImage into a texture
-        glGenTextures(1, &tname);
-        glBindTexture(GL_TEXTURE_2D, tname);
-        glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, (GLeglImageOES)image);
+    // turn our EGLImage into a texture
+    glGenTextures(1, &tname);
+    glBindTexture(GL_TEXTURE_2D, tname);
+    glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, (GLeglImageOES)image);
 
-        // create a Framebuffer Object to render into
-        glGenFramebuffersOES(1, &name);
-        glBindFramebufferOES(GL_FRAMEBUFFER_OES, name);
-        glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES,
-                GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, tname, 0);
-    } else {
-        // since we're going to use glReadPixels() anyways,
-        // use an intermediate renderbuffer instead
-        glGenRenderbuffersOES(1, &tname);
-        glBindRenderbufferOES(GL_RENDERBUFFER_OES, tname);
-        glRenderbufferStorageOES(GL_RENDERBUFFER_OES, GL_RGBA8_OES, reqWidth, reqHeight);
-        // create a FBO to render into
-        glGenFramebuffersOES(1, &name);
-        glBindFramebufferOES(GL_FRAMEBUFFER_OES, name);
-        glFramebufferRenderbufferOES(GL_FRAMEBUFFER_OES, GL_COLOR_ATTACHMENT0_OES, GL_RENDERBUFFER_OES, tname);
-    }
+    // create a Framebuffer Object to render into
+    glGenFramebuffersOES(1, &name);
+    glBindFramebufferOES(GL_FRAMEBUFFER_OES, name);
+    glFramebufferTexture2DOES(GL_FRAMEBUFFER_OES,
+            GL_COLOR_ATTACHMENT0_OES, GL_TEXTURE_2D, tname, 0);
 
     *status = glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES);
     *texName = tname;
     *fbName = name;
 }
 
-void GLES11RenderEngine::unbindFramebuffer(uint32_t texName, uint32_t fbName,
-        bool useReadPixels) {
+void GLES11RenderEngine::unbindFramebuffer(uint32_t texName, uint32_t fbName) {
     glBindFramebufferOES(GL_FRAMEBUFFER_OES, 0);
     glDeleteFramebuffersOES(1, &fbName);
-    if (!useReadPixels)
-        glDeleteTextures(1, &texName);
-    else
-        glDeleteRenderbuffersOES(1, &texName);
+    glDeleteTextures(1, &texName);
 }
 
 void GLES11RenderEngine::setupFillWithColor(float r, float g, float b, float a) {
@@ -298,6 +266,14 @@ void GLES11RenderEngine::drawMesh(const Mesh& mesh) {
     if (mesh.getTexCoordsSize()) {
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }
+}
+
+void GLES11RenderEngine::beginGroup(const mat4& /*colorTransform*/) {
+    // doesn't do anything in GLES 1.1
+}
+
+void GLES11RenderEngine::endGroup() {
+    // doesn't do anything in GLES 1.1
 }
 
 void GLES11RenderEngine::dump(String8& result) {

@@ -227,9 +227,6 @@ struct InputReaderConfiguration {
 
     // True to show the location of touches on the touch screen as spots.
     bool showTouches;
-    
-    // Ignore finger touches this long after the stylus has been used (including hover)
-    nsecs_t stylusPalmRejectionTime;
 
     InputReaderConfiguration() :
             virtualKeyQuietTime(0),
@@ -247,7 +244,6 @@ struct InputReaderConfiguration {
             pointerGestureSwipeMaxWidthRatio(0.25f),
             pointerGestureMovementSpeedRatio(0.8f),
             pointerGestureZoomSpeedRatio(0.3f),
-            stylusPalmRejectionTime(50 * 10000000LL), // 50 ms
             showTouches(false) { }
 
     bool getDisplayInfo(bool external, DisplayViewport* outViewport) const;
@@ -1239,7 +1235,6 @@ protected:
             DEVICE_TYPE_TOUCH_SCREEN,
             DEVICE_TYPE_TOUCH_PAD,
             DEVICE_TYPE_TOUCH_NAVIGATION,
-            DEVICE_TYPE_GESTURE_SENSOR,
             DEVICE_TYPE_POINTER,
         };
 
@@ -1373,11 +1368,6 @@ protected:
     sp<PointerControllerInterface> mPointerController;
 
     Vector<VirtualKey> mVirtualKeys;
-
-    // true if we support external hovering cursor control
-    bool mHasExternalHoveringCursorControl;
-    // visibility state of hovering cursor (true=visible)
-    bool mExternalHoveringCursorVisible;
 
     virtual void configureParameters();
     virtual void dumpParameters(String8& dump);
@@ -1681,9 +1671,6 @@ private:
     VelocityControl mPointerVelocityControl;
     VelocityControl mWheelXVelocityControl;
     VelocityControl mWheelYVelocityControl;
-    
-    // The time the stylus event was processed by any TouchInputMapper
-    static nsecs_t mLastStylusTime;
 
     void sync(nsecs_t when);
 
@@ -1737,8 +1724,6 @@ private:
     const VirtualKey* findVirtualKeyHit(int32_t x, int32_t y);
 
     void assignPointerIds();
-    
-    bool rejectPalm(nsecs_t when);
 };
 
 

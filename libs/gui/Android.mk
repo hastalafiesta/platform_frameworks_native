@@ -46,18 +46,6 @@ LOCAL_SHARED_LIBRARIES := \
 	libutils \
 	liblog
 
-# Executed only on QCOM BSPs
-ifeq ($(TARGET_USES_QCOM_BSP),true)
-    LOCAL_C_INCLUDES += $(call project-path-for,qcom-display)/libgralloc
-endif
-
-ifeq ($(BOARD_USE_MHEAP_SCREENSHOT),true)
-    LOCAL_CFLAGS += -DUSE_MHEAP_SCREENSHOT
-endif
-
-ifeq ($(BOARD_EGL_SKIP_FIRST_DEQUEUE),true)
-    LOCAL_CFLAGS += -DSURFACE_SKIP_FIRST_DEQUEUE
-endif
 
 LOCAL_MODULE:= libgui
 
@@ -66,10 +54,6 @@ ifeq ($(TARGET_BOARD_PLATFORM), tegra)
 endif
 ifeq ($(TARGET_BOARD_PLATFORM), tegra3)
 	LOCAL_CFLAGS += -DDONT_USE_FENCE_SYNC
-endif
-
-ifeq ($(TARGET_SAMSUNG_GRALLOC_EXTERNAL_USECASES),true)
-	LOCAL_CFLAGS += -DSAMSUNG_GRALLOC_EXTERNAL_USECASES
 endif
 
 include $(BUILD_SHARED_LIBRARY)

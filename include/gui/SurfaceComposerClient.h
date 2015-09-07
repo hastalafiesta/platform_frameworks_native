@@ -40,9 +40,6 @@ namespace android {
 
 class DisplayInfo;
 class Composer;
-#ifdef USE_MHEAP_SCREENSHOT
-class IMemoryHeap;
-#endif
 class ISurfaceComposerClient;
 class IGraphicBufferProducer;
 class Region;
@@ -88,13 +85,6 @@ public:
     /* Triggers screen on/off or low power mode and waits for it to complete */
     static void setDisplayPowerMode(const sp<IBinder>& display, int mode);
 
-#if defined(ICS_CAMERA_BLOB) || defined(MR0_CAMERA_BLOB)
-    static status_t getDisplayInfo(int32_t displayId, DisplayInfo* info);
-    static ssize_t getDisplayWidth(int32_t displayId);
-    static ssize_t getDisplayHeight(int32_t displayId);
-    static ssize_t getDisplayOrientation(int32_t displayId);
-#endif
-
     // ------------------------------------------------------------------------
     // surface creation / destruction
 
@@ -129,10 +119,6 @@ public:
 
     //! Close a composer transaction on all active SurfaceComposerClients.
     static void closeGlobalTransaction(bool synchronous = false);
-
-#if defined(MR0_CAMERA_BLOB)
-    static int setOrientation(int32_t dpy, int orientation, uint32_t flags);
-#endif
 
     //! Flag the currently open transaction as an animation transaction.
     static void setAnimationTransaction();
@@ -177,11 +163,6 @@ public:
             const Rect& layerStackRect,
             const Rect& displayRect);
 
-    status_t    setBlur(const sp<IBinder>& id, float blur);
-    status_t    setBlurMaskSurface(const sp<IBinder>& id, const sp<IBinder>& maskSurfaceId);
-    status_t    setBlurMaskSampling(const sp<IBinder>& id, int32_t blurMaskSampling);
-    status_t    setBlurMaskAlphaThreshold(const sp<IBinder>& id, float alpha);
-
 private:
     virtual void onFirstRef();
     Composer& getComposer();
@@ -207,9 +188,6 @@ public:
             bool useIdentityTransform);
 
 private:
-#ifdef USE_MHEAP_SCREENSHOT
-    sp<IMemoryHeap> mHeap;
-#endif
     mutable sp<CpuConsumer> mCpuConsumer;
     mutable sp<IGraphicBufferProducer> mProducer;
     CpuConsumer::LockedBuffer mBuffer;
